@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
+             x:Class="OkBoomerAI.Views.VibeCheckPage"
+             x:DataType="vm:VibeCheckViewModel"
+             Title="Vibe Check"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <!-- Header -->
+            <Label Text="📊 Vibe Check" FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryText}" HorizontalOptions="Center" />
+            <Label Text="Paste any text and I'll read the vibes"
+                   FontSize="14" TextColor="{StaticResource SubtleText}"
+                   HorizontalOptions="Center" />
+
+            <!-- Input -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16">
+                <Editor Text="{Binding InputText}"
+                        Placeholder="Paste a text message, tweet, or comment..."
+                        PlaceholderColor="{StaticResource SubtleText}"
+                        TextColor="{StaticResource PrimaryText}"
+                        FontSize="16"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="100"
+                        MaximumHeightRequest="200" />
+            </Border>
+
+            <!-- Analyze Button -->
+            <Button Text="🔮 Check the Vibe"
+                    Command="{Binding AnalyzeVibeCommand}"
+                    BackgroundColor="{StaticResource HotPink}"
+                    TextColor="White"
+                    FontSize="18" FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="56"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBool}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource HotPink}" />
+
+            <!-- Vibe Result Card -->
+            <Border StrokeShape="RoundRectangle 20"
+                    BackgroundColor="{Binding VibeColor}"
+                    Padding="24"
+                    IsVisible="{Binding HasResult}">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <Label Text="{Binding VibeEmoji}" FontSize="64" HorizontalOptions="Center" />
+                    <Label Text="{Binding VibeName}"
+                           FontSize="32" FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                    <ProgressBar Progress="{Binding Confidence}"
+                                 ProgressColor="White"
+                                 HeightRequest="8" />
+                    <Label Text="{Binding Confidence, StringFormat='{0:P0} confidence'}"
+                           FontSize="13" TextColor="White"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Explanation -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16"
+                    IsVisible="{Binding HasResult}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Analysis" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Label Text="{Binding Explanation}"
+                           FontSize="15"
+                           TextColor="{StaticResource PrimaryText}" />
+
+                    <BoxView HeightRequest="1" Color="{StaticResource CardBorder}" />
+
+                    <Label Text="Boomer Translation" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Label Text="{Binding BoomerTranslation}"
+                           FontSize="14" FontAttributes="Italic"
+                           TextColor="{StaticResource AccentPurple}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Reset -->
+            <Button Text="🔄 New Vibe Check"
+                    Command="{Binding ResetCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource SubtleText}"
+                    FontSize="14"
+                    IsVisible="{Binding HasResult}"
+                    HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

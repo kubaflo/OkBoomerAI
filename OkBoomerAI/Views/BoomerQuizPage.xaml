@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
+             x:Class="OkBoomerAI.Views.BoomerQuizPage"
+             x:DataType="vm:BoomerQuizViewModel"
+             Title="Quiz"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <!-- Header -->
+            <Label Text="🧠 Boomer Quiz" FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryText}" HorizontalOptions="Center" />
+
+            <!-- Score Board -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16">
+                <HorizontalStackLayout Spacing="24" HorizontalOptions="Center">
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="{Binding Score}" FontSize="32" FontAttributes="Bold"
+                               TextColor="{StaticResource NeonGreen}" HorizontalOptions="Center" />
+                        <Label Text="Score" FontSize="12" TextColor="{StaticResource SubtleText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="{Binding Streak}" FontSize="32" FontAttributes="Bold"
+                               TextColor="{StaticResource HotPink}" HorizontalOptions="Center" />
+                        <Label Text="Streak 🔥" FontSize="12" TextColor="{StaticResource SubtleText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout HorizontalOptions="Center">
+                        <Label Text="{Binding TotalQuestions}" FontSize="32" FontAttributes="Bold"
+                               TextColor="{StaticResource AccentPurple}" HorizontalOptions="Center" />
+                        <Label Text="Total" FontSize="12" TextColor="{StaticResource SubtleText}"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Generate Question -->
+            <Button Text="{Binding HasQuestion, Converter={StaticResource QuizButtonText}}"
+                    Command="{Binding GenerateQuestionCommand}"
+                    BackgroundColor="{StaticResource NeonGreen}"
+                    TextColor="{StaticResource DarkBg}"
+                    FontSize="18" FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="56"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBool}}"
+                    IsVisible="{Binding HasAnswered, Converter={StaticResource InvertBool}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource NeonGreen}" />
+
+            <!-- Question -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource AccentPurple}"
+                    StrokeThickness="2"
+                    Padding="20"
+                    IsVisible="{Binding HasQuestion}">
+                <Label Text="{Binding Question}"
+                       FontSize="18" FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryText}" />
+            </Border>
+
+            <!-- Options -->
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding HasQuestion}"
+                                 BindableLayout.ItemsSource="{Binding Options}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Button Text="{Binding .}"
+                                BackgroundColor="{StaticResource CardBackground}"
+                                TextColor="{StaticResource PrimaryText}"
+                                FontSize="15"
+                                CornerRadius="12"
+                                HeightRequest="52"
+                                BorderWidth="1"
+                                BorderColor="{StaticResource CardBorder}"
+                                HorizontalOptions="Fill" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Feedback -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16"
+                    IsVisible="{Binding HasAnswered}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding Feedback}"
+                           FontSize="15"
+                           TextColor="{StaticResource PrimaryText}" />
+                    <Button Text="Next Question →"
+                            Command="{Binding GenerateQuestionCommand}"
+                            BackgroundColor="{StaticResource AccentPurple}"
+                            TextColor="White"
+                            FontSize="15"
+                            CornerRadius="12"
+                            HeightRequest="44"
+                            Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Reset -->
+            <Button Text="Reset Score"
+                    Command="{Binding ResetScoreCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource SubtleText}"
+                    FontSize="13"
+                    HorizontalOptions="Center"
+                    IsVisible="{Binding HasQuestion}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

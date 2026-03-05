@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
+             x:Class="OkBoomerAI.Views.SlangDecoderPage"
+             x:DataType="vm:SlangDecoderViewModel"
+             Title="Slang Decoder"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <Grid RowDefinitions="*,Auto" Padding="16">
+
+        <!-- Chat Messages -->
+        <CollectionView ItemsSource="{Binding Messages}"
+                        x:Name="ChatCollection"
+                        ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Grid Padding="4,6">
+                        <!-- Template will be set in code-behind based on IsUser -->
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
+                    <Label Text="🔍" FontSize="64" HorizontalOptions="Center" />
+                    <Label Text="Decode Some Slang"
+                           FontSize="24" FontAttributes="Bold"
+                           TextColor="{StaticResource NeonGreen}"
+                           HorizontalOptions="Center" />
+                    <Label Text="Type any Gen-Z slang, meme, or internet joke&#x0a;and I'll explain it like you're a boomer 💀"
+                           FontSize="14"
+                           TextColor="{StaticResource SubtleText}"
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="Center" />
+                    <Label Text="Try: 'no cap this slaps fr fr'"
+                           FontSize="13" FontAttributes="Italic"
+                           TextColor="{StaticResource AccentPurple}"
+                           HorizontalOptions="Center"
+                           Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- Input Area -->
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto" Grid.Row="1" Padding="0,8,0,0">
+            <Border StrokeShape="RoundRectangle 20"
+                    Stroke="{StaticResource CardBorder}"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Padding="16,8">
+                <Editor x:Name="InputEditor"
+                        Text="{Binding InputText}"
+                        Placeholder="Type some slang, bestie..."
+                        PlaceholderColor="{StaticResource SubtleText}"
+                        TextColor="{StaticResource PrimaryText}"
+                        FontSize="15"
+                        AutoSize="TextChanges"
+                        MaximumHeightRequest="120"
+                        Keyboard="Chat" />
+            </Border>
+            <Button Grid.Column="1"
+                    Text="💬"
+                    Command="{Binding SendMessageCommand}"
+                    FontSize="22"
+                    WidthRequest="52" HeightRequest="52"
+                    CornerRadius="26"
+                    BackgroundColor="{StaticResource NeonGreen}"
+                    TextColor="{StaticResource DarkBg}"
+                    Margin="8,0,0,0"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBool}}" />
+        </Grid>
+
+        <!-- Loading indicator -->
+        <ActivityIndicator Grid.RowSpan="2"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource NeonGreen}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>

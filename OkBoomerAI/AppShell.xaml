@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="OkBoomerAI.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:OkBoomerAI.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.TabBarBackgroundColor="{StaticResource DarkBg}"
+    Shell.TabBarTitleColor="{StaticResource NeonGreen}"
+    Shell.TabBarUnselectedColor="{StaticResource SubtleText}"
+    Shell.BackgroundColor="{StaticResource DarkBg}"
+    Shell.ForegroundColor="{StaticResource PrimaryText}"
+    Title="OK Boomer AI">
+
+    <TabBar>
+        <ShellContent Title="🔍 Decoder"
+                      ContentTemplate="{DataTemplate views:SlangDecoderPage}"
+                      Route="SlangDecoder" />
+        <ShellContent Title="🔄 Translate"
+                      ContentTemplate="{DataTemplate views:BoomerTranslatorPage}"
+                      Route="BoomerTranslator" />
+        <ShellContent Title="📊 Vibe"
+                      ContentTemplate="{DataTemplate views:VibeCheckPage}"
+                      Route="VibeCheck" />
+        <ShellContent Title="📚 Dictionary"
+                      ContentTemplate="{DataTemplate views:SlangDictionaryPage}"
+                      Route="SlangDictionary" />
+        <ShellContent Title="🧠 Quiz"
+                      ContentTemplate="{DataTemplate views:BoomerQuizPage}"
+                      Route="BoomerQuiz" />
+    </TabBar>
+
+</Shell>

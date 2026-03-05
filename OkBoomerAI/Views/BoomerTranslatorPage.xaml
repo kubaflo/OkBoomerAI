@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
+             x:Class="OkBoomerAI.Views.BoomerTranslatorPage"
+             x:DataType="vm:BoomerTranslatorViewModel"
+             Title="Translator"
+             BackgroundColor="{StaticResource PageBackground}">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <!-- Header -->
+            <Label Text="🔄 Boomer Translator" FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryText}" HorizontalOptions="Center" />
+
+            <!-- Direction Toggle -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16">
+                <Grid ColumnDefinitions="*,Auto,*">
+                    <Label Text="{Binding DirectionLabel}"
+                           FontSize="18" FontAttributes="Bold"
+                           TextColor="{StaticResource AccentPurple}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           Grid.ColumnSpan="3" />
+                </Grid>
+            </Border>
+            <Button Text="⇄ Switch Direction"
+                    Command="{Binding ToggleDirectionCommand}"
+                    BackgroundColor="{StaticResource AccentPurple}"
+                    TextColor="White"
+                    CornerRadius="12"
+                    FontSize="14"
+                    HeightRequest="44"
+                    HorizontalOptions="Center" />
+
+            <!-- Input -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource CardBorder}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Input" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Editor Text="{Binding InputText}"
+                            Placeholder="Type something to translate..."
+                            PlaceholderColor="{StaticResource SubtleText}"
+                            TextColor="{StaticResource PrimaryText}"
+                            FontSize="16"
+                            AutoSize="TextChanges"
+                            MinimumHeightRequest="80"
+                            MaximumHeightRequest="200" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Translate Button -->
+            <Button Text="🔮 Translate"
+                    Command="{Binding TranslateCommand}"
+                    BackgroundColor="{StaticResource NeonGreen}"
+                    TextColor="{StaticResource DarkBg}"
+                    FontSize="18" FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="56"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBool}}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource NeonGreen}" />
+
+            <!-- Result -->
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{StaticResource CardBackground}"
+                    Stroke="{StaticResource NeonGreen}"
+                    StrokeThickness="2"
+                    Padding="16"
+                    IsVisible="{Binding TranslatedText, Converter={StaticResource IsNotEmpty}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Translation" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Label Text="{Binding TranslatedText}"
+                           FontSize="18" FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryText}" />
+
+                    <BoxView HeightRequest="1" Color="{StaticResource CardBorder}" />
+
+                    <Label Text="Tone Shift" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Label Text="{Binding ToneShift}"
+                           FontSize="14"
+                           TextColor="{StaticResource AccentPurple}" />
+
+                    <Label Text="Notes" FontSize="13" TextColor="{StaticResource SubtleText}" />
+                    <Label Text="{Binding Notes}"
+                           FontSize="14"
+                           TextColor="{StaticResource PrimaryText}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
