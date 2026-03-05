@@ -28,8 +28,10 @@ public static class MauiProgram
 
 		// AI Services
 #if IOS || MACCATALYST
+#pragma warning disable CA1416 // Validate platform compatibility
 		builder.Services.AddSingleton<IChatClient>(new AppleIntelligenceChatClient());
 		builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(new NLEmbeddingGenerator());
+#pragma warning restore CA1416
 #endif
 
 		// App Services

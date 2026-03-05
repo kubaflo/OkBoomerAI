@@ -68,7 +68,7 @@
             </Border>
 
             <!-- Options -->
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding HasQuestion}"
+            <VerticalStackLayout x:Name="OptionsLayout" Spacing="8" IsVisible="{Binding HasQuestion}"
                                  BindableLayout.ItemsSource="{Binding Options}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="x:String">

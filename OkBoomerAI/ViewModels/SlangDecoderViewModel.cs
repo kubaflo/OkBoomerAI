@@ -49,7 +49,6 @@ public partial class SlangDecoderViewModel : ObservableObject
                 Prompts.SlangDecoder, history, _cts.Token))
             {
                 aiMessage.Content += chunk;
-                OnPropertyChanged(nameof(Messages));
             }
         }
         catch (OperationCanceledException) { }

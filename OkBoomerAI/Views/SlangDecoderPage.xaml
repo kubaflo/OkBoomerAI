@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
+             xmlns:models="clr-namespace:OkBoomerAI.Models"
              x:Class="OkBoomerAI.Views.SlangDecoderPage"
              x:DataType="vm:SlangDecoderViewModel"
              Title="Slang Decoder"
@@ -14,9 +15,39 @@
                         x:Name="ChatCollection"
                         ItemsUpdatingScrollMode="KeepLastItemInView">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="x:String">
+                <DataTemplate x:DataType="models:ChatMessage">
                     <Grid Padding="4,6">
-                        <!-- Template will be set in code-behind based on IsUser -->
+                        <Border StrokeShape="RoundRectangle 16,16,4,16"
+                                BackgroundColor="{StaticResource NeonGreen}"
+                                Stroke="Transparent"
+                                Padding="14,10"
+                                HorizontalOptions="End"
+                                MaximumWidthRequest="300"
+                                IsVisible="{Binding IsUser}">
+                            <Label Text="{Binding Content}"
+                                   TextColor="{StaticResource DarkBg}"
+                                   FontSize="15"
+                                   LineBreakMode="WordWrap" />
+                        </Border>
+                        <Border StrokeShape="RoundRectangle 4,16,16,16"
+                                BackgroundColor="{StaticResource CardBackground}"
+                                Stroke="{StaticResource CardBorder}"
+                                StrokeThickness="1"
+                                Padding="14,10"
+                                HorizontalOptions="Start"
+                                MaximumWidthRequest="300">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border"
+                                             Binding="{Binding IsUser}"
+                                             Value="True">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Label Text="{Binding Content}"
+                                   TextColor="{StaticResource PrimaryText}"
+                                   FontSize="15"
+                                   LineBreakMode="WordWrap" />
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

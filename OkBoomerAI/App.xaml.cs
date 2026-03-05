@@ -1,5 +1,3 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
 namespace OkBoomerAI;
 
 public partial class App : Application

@@ -42,6 +42,9 @@ public partial class BoomerQuizViewModel : ObservableObject
     [ObservableProperty]
     private int _selectedIndex = -1;
 
+    [ObservableProperty]
+    private int _correctAnswerIndex = -1;
+
     private QuizQuestion? _currentQuestion;
 
     private const string QuizSchema = """
@@ -70,6 +73,7 @@ public partial class BoomerQuizViewModel : ObservableObject
         HasAnswered = false;
         HasQuestion = false;
         SelectedIndex = -1;
+        CorrectAnswerIndex = -1;
         Feedback = string.Empty;
 
         try
@@ -105,6 +109,7 @@ public partial class BoomerQuizViewModel : ObservableObject
         if (_currentQuestion == null || HasAnswered) return;
 
         SelectedIndex = index;
+        CorrectAnswerIndex = _currentQuestion.CorrectIndex;
         HasAnswered = true;
         TotalQuestions++;
 
