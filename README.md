@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="screenshots/appicon.png" width="150" alt="OK Boomer AI Icon" />
+
 # 🧓 OK Boomer AI
 
 ### Running Gen-Z jokes on legacy humans
@@ -14,6 +16,10 @@
 <br/>
 
 *Can't tell if your grandkid is roasting you or complimenting you? Let AI explain it.*
+
+<br/>
+
+<img src="screenshots/home.jpg" width="180" /> <img src="screenshots/decode.jpg" width="180" /> <img src="screenshots/library.jpg" width="180" /> <img src="screenshots/detail.jpg" width="180" /> <img src="screenshots/settings.jpg" width="180" />
 
 </div>
 
