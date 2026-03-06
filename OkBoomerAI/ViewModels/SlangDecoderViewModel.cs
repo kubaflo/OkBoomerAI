@@ -1,7 +1,6 @@
-using System.Collections.ObjectModel;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OkBoomerAI.Models;
 using OkBoomerAI.Services;
 
 namespace OkBoomerAI.ViewModels;
@@ -10,13 +9,42 @@ public partial class SlangDecoderViewModel : ObservableObject
 {
     private readonly IChatService _chatService;
 
+    private static readonly string ResponseJsonSchema = """
+        {
+            "type": "object",
+            "properties": {
+                "category": { "type": "string" },
+                "confusion_stars": { "type": "integer" },
+                "explanation": { "type": "string" },
+                "humor_note": { "type": "string" }
+            },
+            "required": ["category", "confusion_stars", "explanation", "humor_note"]
+        }
+        """;
+
     [ObservableProperty]
     private string _inputText = string.Empty;
 
     [ObservableProperty]
-    private bool _isBusy;
+    private double _confusionLevel = 0.5;
 
-    public ObservableCollection<ChatMessage> Messages { get; } = [];
+    [ObservableProperty]
+    private bool _hasResult;
+
+    [ObservableProperty]
+    private string _category = string.Empty;
+
+    [ObservableProperty]
+    private int _confusionStars;
+
+    [ObservableProperty]
+    private string _explanationText = string.Empty;
+
+    [ObservableProperty]
+    private string _humorNote = string.Empty;
+
+    [ObservableProperty]
+    private bool _isBusy;
 
     private CancellationTokenSource? _cts;
 
@@ -26,47 +54,109 @@ public partial class SlangDecoderViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SendMessage()
+    private async Task Explain()
     {
         var text = InputText?.Trim();
         if (string.IsNullOrEmpty(text)) return;
 
-        Messages.Add(new ChatMessage { Content = text, IsUser = true });
-        InputText = string.Empty;
-        IsBusy = true;
+        await RequestExplanationAsync(text, simpler: false);
+    }
 
-        var aiMessage = new ChatMessage { Content = "", IsUser = false, IsStreaming = true };
-        Messages.Add(aiMessage);
+    [RelayCommand]
+    private async Task Huh()
+    {
+        var text = InputText?.Trim();
+        if (string.IsNullOrEmpty(text) || !HasResult) return;
+
+        await RequestExplanationAsync(text, simpler: true);
+    }
+
+    [RelayCommand]
+    private async Task Share()
+    {
+        if (!HasResult || string.IsNullOrEmpty(ExplanationText)) return;
+
+        var shareText = $"[{Category}] ⭐ {ConfusionStars}/5\n\n{ExplanationText}\n\n😂 {HumorNote}";
+        await Clipboard.Default.SetTextAsync(shareText);
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        _cts?.Cancel();
+        InputText = string.Empty;
+        ConfusionLevel = 0.5;
+        HasResult = false;
+        Category = string.Empty;
+        ConfusionStars = 0;
+        ExplanationText = string.Empty;
+        HumorNote = string.Empty;
+        IsBusy = false;
+    }
+
+    private async Task RequestExplanationAsync(string text, bool simpler)
+    {
+        IsBusy = true;
 
         try
         {
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
 
-            var history = Messages.ToList();
-
-            await foreach (var chunk in _chatService.GetStreamingResponseAsync(
-                Prompts.SlangDecoder, history, _cts.Token))
+            var confusionLabel = ConfusionLevel switch
             {
-                aiMessage.Content += chunk;
+                < 0.25 => "mildly confused (they're young-ish)",
+                < 0.5 => "moderately confused",
+                < 0.75 => "very confused",
+                _ => "full boomer, completely clueless"
+            };
+
+            var userMessage = simpler
+                ? $"Explain even simpler, I really don't get it: \"{text}\" (confusion level: {confusionLabel})"
+                : $"Explain this: \"{text}\" (confusion level: {confusionLabel})";
+
+            var json = await _chatService.GetStructuredResponseAsync(
+                Prompts.SlangDecoderStructured, userMessage, ResponseJsonSchema, _cts.Token);
+
+            var result = JsonSerializer.Deserialize<SlangDecoderResponse>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (result is not null)
+            {
+                Category = result.Category ?? "Unknown";
+                ConfusionStars = Math.Clamp(result.ConfusionStars, 1, 5);
+                ExplanationText = result.Explanation ?? string.Empty;
+                HumorNote = result.HumorNote ?? string.Empty;
+                HasResult = true;
             }
         }
         catch (OperationCanceledException) { }
         catch (Exception ex)
         {
-            aiMessage.Content = $"Bruh, something went wrong 💀: {ex.Message}";
+            ExplanationText = $"Bruh, something went wrong 💀: {ex.Message}";
+            Category = "Error";
+            ConfusionStars = 5;
+            HumorNote = "Even the AI is confused";
+            HasResult = true;
         }
         finally
         {
-            aiMessage.IsStreaming = false;
             IsBusy = false;
         }
     }
 
-    [RelayCommand]
-    private void ClearChat()
+    private sealed class SlangDecoderResponse
     {
-        _cts?.Cancel();
-        Messages.Clear();
+        public string? Category { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("confusion_stars")]
+        public int ConfusionStars { get; set; }
+
+        public string? Explanation { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("humor_note")]
+        public string? HumorNote { get; set; }
     }
 }

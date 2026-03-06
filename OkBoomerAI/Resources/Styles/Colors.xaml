@@ -18,6 +18,12 @@
     <Color x:Key="CyberYellow">#FFE66D</Color>
     <Color x:Key="ElectricBlue">#00D2FF</Color>
 
+    <!-- Game UI Colors -->
+    <Color x:Key="StarGold">#FFD700</Color>
+    <Color x:Key="ButtonGreen">#2ECC71</Color>
+    <Color x:Key="ButtonOrange">#E67E22</Color>
+    <Color x:Key="CategoryBlue">#3498DB</Color>
+
     <!-- Text Colors -->
     <Color x:Key="PrimaryText">#F0F0F0</Color>
     <Color x:Key="SubtleText">#8892B0</Color>

@@ -2,110 +2,179 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:OkBoomerAI.ViewModels"
-             xmlns:models="clr-namespace:OkBoomerAI.Models"
              x:Class="OkBoomerAI.Views.SlangDecoderPage"
              x:DataType="vm:SlangDecoderViewModel"
              Title="Slang Decoder"
-             BackgroundColor="{StaticResource PageBackground}">
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="*,Auto" Padding="16">
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="{StaticResource PageBackground}" Offset="0.0" />
+            <GradientStop Color="{StaticResource DarkBg}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
-        <!-- Chat Messages -->
-        <CollectionView ItemsSource="{Binding Messages}"
-                        x:Name="ChatCollection"
-                        ItemsUpdatingScrollMode="KeepLastItemInView">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:ChatMessage">
-                    <Grid Padding="4,6">
-                        <Border StrokeShape="RoundRectangle 16,16,4,16"
-                                BackgroundColor="{StaticResource NeonGreen}"
-                                Stroke="Transparent"
-                                Padding="14,10"
-                                HorizontalOptions="End"
-                                MaximumWidthRequest="300"
-                                IsVisible="{Binding IsUser}">
-                            <Label Text="{Binding Content}"
-                                   TextColor="{StaticResource DarkBg}"
-                                   FontSize="15"
-                                   LineBreakMode="WordWrap" />
-                        </Border>
-                        <Border StrokeShape="RoundRectangle 4,16,16,16"
-                                BackgroundColor="{StaticResource CardBackground}"
-                                Stroke="{StaticResource CardBorder}"
-                                StrokeThickness="1"
-                                Padding="14,10"
-                                HorizontalOptions="Start"
-                                MaximumWidthRequest="300">
-                            <Border.Triggers>
-                                <DataTrigger TargetType="Border"
-                                             Binding="{Binding IsUser}"
-                                             Value="True">
-                                    <Setter Property="IsVisible" Value="False" />
-                                </DataTrigger>
-                            </Border.Triggers>
-                            <Label Text="{Binding Content}"
-                                   TextColor="{StaticResource PrimaryText}"
-                                   FontSize="15"
-                                   LineBreakMode="WordWrap" />
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-            <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
-                    <Label Text="🔍" FontSize="64" HorizontalOptions="Center" />
-                    <Label Text="Decode Some Slang"
-                           FontSize="24" FontAttributes="Bold"
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="20,0" Spacing="16">
+
+                <!-- ═══════════ HEADER ═══════════ -->
+                <Image Source="boomer_hero.png"
+                       HeightRequest="200"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Center"
+                       Margin="0,24,0,0" />
+
+                <Label Text="Running Gen-Z Jokes on Legacy Humans"
+                       FontSize="13"
+                       FontAttributes="Italic"
+                       TextColor="{StaticResource SubtleText}"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,-8,0,0" />
+
+                <!-- ═══════════ INPUT SECTION ═══════════ -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="{StaticResource CardBorder}"
+                        BackgroundColor="{StaticResource CardBackground}"
+                        Padding="16,4"
+                        Margin="0,8,0,0">
+                    <Entry Text="{Binding InputText}"
+                           Placeholder="Enter meme or joke..."
+                           PlaceholderColor="{StaticResource SubtleText}"
+                           TextColor="{StaticResource PrimaryText}"
+                           FontSize="16"
+                           BackgroundColor="Transparent" />
+                </Border>
+
+                <!-- Slider: Young ↔ Full Boomer -->
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="4,0">
+                    <Label Text="Young"
+                           FontSize="12"
                            TextColor="{StaticResource NeonGreen}"
-                           HorizontalOptions="Center" />
-                    <Label Text="Type any Gen-Z slang, meme, or internet joke&#x0a;and I'll explain it like you're a boomer 💀"
-                           FontSize="14"
-                           TextColor="{StaticResource SubtleText}"
-                           HorizontalTextAlignment="Center"
-                           HorizontalOptions="Center" />
-                    <Label Text="Try: 'no cap this slaps fr fr'"
-                           FontSize="13" FontAttributes="Italic"
-                           TextColor="{StaticResource AccentPurple}"
-                           HorizontalOptions="Center"
-                           Margin="0,8,0,0" />
+                           VerticalOptions="Center" />
+                    <Slider Grid.Column="1"
+                            Minimum="0" Maximum="5"
+                            Value="{Binding ConfusionLevel}"
+                            MinimumTrackColor="{StaticResource NeonGreen}"
+                            MaximumTrackColor="{StaticResource CardBorder}"
+                            ThumbColor="{StaticResource NeonGreen}"
+                            Margin="8,0" />
+                    <Label Grid.Column="2"
+                           Text="Full Boomer"
+                           FontSize="12"
+                           TextColor="{StaticResource HotPink}"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <!-- ═══════════ ACTION BUTTONS ═══════════ -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Text="🔍 Explain the Joke"
+                            Command="{Binding ExplainCommand}"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            CornerRadius="14"
+                            BackgroundColor="{StaticResource NeonGreen}"
+                            TextColor="{StaticResource DarkBg}" />
+                    <Button Grid.Column="1"
+                            Text="🤔 Huh?"
+                            Command="{Binding HuhCommand}"
+                            FontSize="15"
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            CornerRadius="14"
+                            BackgroundColor="{StaticResource CyberYellow}"
+                            TextColor="{StaticResource DarkBg}" />
+                </Grid>
+
+                <!-- ═══════════ RESULT SECTION ═══════════ -->
+                <VerticalStackLayout Spacing="14"
+                                     IsVisible="{Binding HasResult}"
+                                     Margin="0,8,0,0">
+
+                    <!-- Category Badge -->
+                    <Border StrokeShape="RoundRectangle 20"
+                            BackgroundColor="{StaticResource ElectricBlue}"
+                            Stroke="Transparent"
+                            Padding="16,6"
+                            HorizontalOptions="Start">
+                        <Label Text="{Binding Category}"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource DarkBg}" />
+                    </Border>
+
+                    <!-- Confusion Stars -->
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <Label Text="Boomer Confusion Level:"
+                               FontSize="13"
+                               TextColor="{StaticResource SubtleText}"
+                               VerticalOptions="Center" />
+                        <Label Text="{Binding ConfusionStars, StringFormat='{0}/5 ★'}"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource CyberYellow}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Explanation Card -->
+                    <Border StrokeShape="RoundRectangle 16"
+                            Stroke="{StaticResource CardBorder}"
+                            StrokeThickness="1"
+                            BackgroundColor="{StaticResource CardBackground}"
+                            Padding="18,16">
+                        <Label Text="{Binding ExplanationText}"
+                               FontSize="15"
+                               TextColor="{StaticResource PrimaryText}"
+                               LineBreakMode="WordWrap"
+                               LineHeight="1.4" />
+                    </Border>
+
+                    <!-- Humor Note Badge -->
+                    <Border StrokeShape="RoundRectangle 20"
+                            BackgroundColor="{StaticResource AccentPurple}"
+                            Stroke="Transparent"
+                            Padding="16,8"
+                            HorizontalOptions="Start">
+                        <Label Text="{Binding HumorNote}"
+                               FontSize="12"
+                               FontAttributes="Italic"
+                               TextColor="{StaticResource PrimaryText}" />
+                    </Border>
+
+                    <!-- Share & Reset Buttons -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0">
+                        <Button Text="📤 Share"
+                                Command="{Binding ShareCommand}"
+                                FontSize="14"
+                                HeightRequest="46"
+                                CornerRadius="14"
+                                BackgroundColor="{StaticResource CardBackground}"
+                                BorderColor="{StaticResource ElectricBlue}"
+                                BorderWidth="1"
+                                TextColor="{StaticResource ElectricBlue}" />
+                        <Button Grid.Column="1"
+                                Text="👴 OK Boomer"
+                                Command="{Binding ResetCommand}"
+                                FontSize="14"
+                                HeightRequest="46"
+                                CornerRadius="14"
+                                BackgroundColor="{StaticResource HotPink}"
+                                TextColor="{StaticResource PrimaryText}" />
+                    </Grid>
                 </VerticalStackLayout>
-            </CollectionView.EmptyView>
-        </CollectionView>
 
-        <!-- Input Area -->
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto" Grid.Row="1" Padding="0,8,0,0">
-            <Border StrokeShape="RoundRectangle 20"
-                    Stroke="{StaticResource CardBorder}"
-                    BackgroundColor="{StaticResource CardBackground}"
-                    Padding="16,8">
-                <Editor x:Name="InputEditor"
-                        Text="{Binding InputText}"
-                        Placeholder="Type some slang, bestie..."
-                        PlaceholderColor="{StaticResource SubtleText}"
-                        TextColor="{StaticResource PrimaryText}"
-                        FontSize="15"
-                        AutoSize="TextChanges"
-                        MaximumHeightRequest="120"
-                        Keyboard="Chat" />
-            </Border>
-            <Button Grid.Column="1"
-                    Text="💬"
-                    Command="{Binding SendMessageCommand}"
-                    FontSize="22"
-                    WidthRequest="52" HeightRequest="52"
-                    CornerRadius="26"
-                    BackgroundColor="{StaticResource NeonGreen}"
-                    TextColor="{StaticResource DarkBg}"
-                    Margin="8,0,0,0"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBool}}" />
-        </Grid>
+                <!-- ═══════════ BUSY INDICATOR ═══════════ -->
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource NeonGreen}"
+                                   HeightRequest="40"
+                                   HorizontalOptions="Center" />
 
-        <!-- Loading indicator -->
-        <ActivityIndicator Grid.RowSpan="2"
-                           IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           Color="{StaticResource NeonGreen}"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center" />
+                <!-- Bottom spacing -->
+                <BoxView HeightRequest="24" Color="Transparent" />
+
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

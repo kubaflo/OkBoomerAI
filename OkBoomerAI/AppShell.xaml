@@ -13,7 +13,7 @@
     Title="OK Boomer AI">
 
     <TabBar>
-        <ShellContent Title="🔍 Decoder"
+        <ShellContent Title="🏠 Home"
                       ContentTemplate="{DataTemplate views:SlangDecoderPage}"
                       Route="SlangDecoder" />
         <ShellContent Title="🔄 Translate"
