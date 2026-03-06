@@ -3,40 +3,68 @@
 @inject IChatService ChatService
 @inject IEmbeddingService EmbeddingService
 
-<h2 class="page-title">📚 Slang Dictionary</h2>
-<p class="page-subtitle">Search by meaning using AI embeddings ✨</p>
+<div class="library-header-row">
+    <div class="library-title-group">
+        <h2 class="library-title">SLANG LIBRARY</h2>
+        <p class="library-subtitle">Learn Gen-Z slang with the power of AI</p>
+    </div>
+</div>
 
-<div class="input-card">
-    <input type="text" class="input-field" @bind="searchText" @bind:event="oninput"
-           @onkeyup="HandleSearch" placeholder="Search by meaning... (e.g., 'angry')" />
+<div class="library-search-container">
+    <div class="library-search-pill">
+        <span class="search-icon-left">💡</span>
+        <input type="text" class="library-search-input" @bind="searchText" @bind:event="oninput"
+               @onkeyup="HandleSearch" placeholder="Search slang meaning..." />
+        <span class="search-icon-right">🔍</span>
+    </div>
 </div>
 
 @if (isLoadingEmbeddings)
 {
-    <p class="page-subtitle">🧠 Loading semantic search...</p>
+    <p class="library-subtitle" style="text-align: center;">🧠 Loading semantic search...</p>
 }
 
 @if (showExplanation && selectedEntry != null)
 {
-    <div class="result-card fade-in" style="border-color: var(--neon-green);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="color: var(--neon-green); margin: 0;">@selectedEntry.Term</h3>
-            <button class="btn btn-ghost" @onclick="() => showExplanation = false" style="padding: 4px 12px;">✕</button>
+    <div class="library-explanation-overlay fade-in" @onclick="() => showExplanation = false">
+        <div class="library-explanation-card" @onclick:stopPropagation="true">
+            <div class="explanation-header">
+                <button class="btn-close" @onclick="() => showExplanation = false">✕</button>
+            </div>
+            
+            <h3 class="explanation-term">@selectedEntry.Term</h3>
+            
+            <div class="explanation-scroll-content">
+                @if (explanation.Contains("...")) 
+                {
+                    <div class="loading-spinner">
+                        <div class="dot-loader"><span></span><span></span><span></span></div>
+                        <p>Consulting the Gen-Z Oracles...</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="explanation-body">
+                        @((MarkupString)FormatExplanation(explanation))
+                    </div>
+                }
+            </div>
         </div>
-        <p class="explanation-text">@explanation</p>
     </div>
 }
 
-<div class="dictionary-list">
+<div class="library-list">
     @foreach (var entry in filteredEntries)
     {
-        <div class="dictionary-item" @onclick="() => ExplainTerm(entry)">
-            <div class="dictionary-header">
-                <span class="dictionary-term">@entry.Term</span>
-                <span class="category-badge">@entry.Category</span>
+        <div class="library-item @GetCategoryClass(entry.Category)" @onclick="() => ExplainTerm(entry)">
+            <div class="library-item-content">
+                <div class="library-item-top">
+                    <span class="library-item-term">@entry.Term</span>
+                    <span class="library-item-tag">@GetCategoryTag(entry.Category)</span>
+                </div>
+                <p class="library-item-def">@entry.Definition</p>
+                <p class="library-item-example">"@entry.Example"</p>
             </div>
-            <p class="dictionary-def">@entry.Definition</p>
-            <p class="dictionary-example">"@entry.Example"</p>
         </div>
     }
 </div>
@@ -51,12 +79,93 @@
     private SlangEntry? selectedEntry;
     private string explanation = "";
 
+    private string FormatExplanation(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "";
+        
+        // Remove "Generating explanation... 🧠" if it's there
+        text = text.Replace("Generating explanation... 🧠", "");
+
+        // Convert bold markdown (**Text**) to HTML <strong>
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\*\*(.*?)\*\*", "<strong>$1</strong>");
+
+        // Convert markdown bullets (- Item) to list items
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"^- (.*)", "<li>$1</li>", System.Text.RegularExpressions.RegexOptions.Multiline);
+        
+        // Wrap lists if any exist
+        if (text.Contains("<li>"))
+        {
+            text = "<ul>" + text + "</ul>";
+            // Clean up </ul><ul> scenarios if multiple lists appear
+            text = text.Replace("</ul><ul>", "");
+            // Move stray <li>s into valid ul blocks if regex was too aggressive? Or just let browser handle it.
+            // Better: Let's focus on structure.
+        }
+
+        // Convert double newlines to paragraphs
+        var paragraphs = text.Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+        var formatted = string.Join("", paragraphs.Select(p => 
+        {
+            if (p.Contains("<li>")) return p; // Assume it's a list block
+            return $"<p>{p.Trim()}</p>";
+        }));
+
+        // Handle single newlines within paragraphs
+        formatted = formatted.Replace("\n", "<br/>");
+
+        return formatted;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         allEntries = await SlangData.GetEntriesAsync();
         filteredEntries = allEntries;
         _ = Task.Run(PrecomputeEmbeddings);
     }
+
+    private string GetCategoryTag(string category) => category?.ToLower() switch
+    {
+        "emphasis" => "EMPHASIS",
+        "praise" => "PRAISE",
+        "criticism" => "CRITICISM",
+        "dating" => "DATING",
+        "internet" => "INTERNET",
+        "social" => "SOCIAL",
+        "empowerment" => "POWER",
+        "confrontation" => "FIGHT",
+        "obsession" => "OBSESSION",
+        "modifier" => "MODIFIER",
+        "humor" => "HUMOR",
+        "description" => "VIBE",
+        "self" => "SELF",
+        "emotion" => "MOOD",
+        "fandom" => "STAN",
+        "manipulation" => "TOXIC",
+        "expression" => "EXPRESSION",
+        "adjective" => "DESCRIPTIVE",
+        "verb" => "ACTION",
+        "noun" => "OBJECT",
+        "greeting" => "GREETING",
+        "insult" => "ROAST",
+        "compliment" => "GLAZE",
+        "reaction" => "REACTION",
+        "phrase" => "PHRASE",
+        "acronym" => "SHORT",
+        _ => "SLANG"
+    };
+
+    private string GetCategoryClass(string category) => category?.ToLower() switch
+    {
+        "praise" or "compliment" => "cat-green",
+        "criticism" or "insult" or "confrontation" => "cat-red",
+        "dating" or "emotion" or "obsession" => "cat-pink",
+        "internet" or "acronym" => "cat-blue",
+        "humor" or "expression" or "reaction" => "cat-orange",
+        "social" or "fandom" => "cat-purple",
+        "manipulation" => "cat-dark",
+        "empowerment" or "verb" => "cat-teal",
+        _ => "cat-gold"
+    };
 
     private async Task PrecomputeEmbeddings()
     {

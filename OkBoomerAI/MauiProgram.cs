@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IChatService, AppleIntelligenceChatService>();
         builder.Services.AddSingleton<IEmbeddingService, EmbeddingService>();
         builder.Services.AddSingleton<SlangDataService>();
+        builder.Services.AddSingleton<HistoryService>();
 
         return builder.Build();
     }

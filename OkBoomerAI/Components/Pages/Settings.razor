@@ -1,0 +1,54 @@
+@page "/settings"
+
+<div class="library-header-row">
+    <div class="library-title-group">
+        <h2 class="library-title">SETTINGS</h2>
+        <p class="library-subtitle">Customize your Boomer experience</p>
+    </div>
+</div>
+
+<div class="settings-section-label">EXPLAIN LEVEL</div>
+
+<div class="settings-group">
+    @foreach (var level in explainLevels)
+    {
+        <div class="settings-card @(selectedLevel == level.Id ? "settings-selected" : "")"
+             @onclick="() => SelectLevel(level.Id)">
+            <div class="settings-card-left">
+                <div class="settings-card-title">@level.Name</div>
+                <div class="settings-card-desc">@level.Description</div>
+            </div>
+            @if (selectedLevel == level.Id)
+            {
+                <div class="settings-check">✓</div>
+            }
+        </div>
+    }
+</div>
+
+<div class="settings-section-label">ABOUT</div>
+
+<div class="settings-about-card">
+    <p class="settings-about-title">OK Boomer AI</p>
+    <p class="settings-about-version">v1.0</p>
+    <div class="settings-about-divider"></div>
+    <p class="settings-about-line">Powered by Apple Intelligence</p>
+    <p class="settings-about-line">Built for the MEAI Hackathon 2026</p>
+    <p class="settings-about-privacy">All AI runs on-device. Your data stays private.</p>
+</div>
+
+@code {
+    private string selectedLevel = "boomer";
+
+    private record ExplainLevel(string Id, string Name, string Description);
+
+    private readonly ExplainLevel[] explainLevels =
+    [
+        new("genz", "Gen-Z", "Explains like you already know the basics"),
+        new("millennial", "Millennial", "Explains with some 2010s context"),
+        new("boomer", "Boomer", "Explains everything from scratch, with analogies"),
+        new("bromer", "Bromer", "Maximum confusion mode — over-explains everything")
+    ];
+
+    private void SelectLevel(string id) => selectedLevel = id;
+}

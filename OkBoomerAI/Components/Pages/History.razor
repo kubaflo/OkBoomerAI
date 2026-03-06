@@ -1,0 +1,81 @@
+@page "/history"
+@inject HistoryService HistorySvc
+@inject NavigationManager Nav
+
+<div class="library-header-row">
+    <div class="library-title-group">
+        <h2 class="library-title">HISTORY</h2>
+        <p class="library-subtitle">Your past explanations and translations</p>
+    </div>
+</div>
+
+@if (HistorySvc.GetAll().Count == 0)
+{
+    <div class="history-empty-card">
+        <p class="history-empty-title">No history yet!</p>
+        <p class="history-empty-sub">Go explain some memes first, boomer.</p>
+        <button class="home-trending-btn" style="margin-top: 1rem;" @onclick="GoHome">GO HOME</button>
+    </div>
+}
+else
+{
+    <div class="history-actions-bar">
+        <span class="history-count">@HistorySvc.GetAll().Count decoded</span>
+        <button class="chip" @onclick="ClearHistory">Clear All</button>
+    </div>
+
+    <div class="library-list">
+        @foreach (var item in HistorySvc.GetAll())
+        {
+            <div class="library-item cat-gold" @onclick="() => ShowDetail(item)">
+                <div class="library-item-content">
+                    <div class="library-item-top">
+                        <span class="library-item-term">@item.Input</span>
+                        <span class="library-item-tag">@(item.Category ?? "DECODED")</span>
+                    </div>
+                    <p class="library-item-def">@Truncate(item.Explanation, 120)</p>
+                    <p class="library-item-example">@item.Timestamp.ToString("MMM d, h:mm tt")</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (showDetail && selectedItem != null)
+{
+    <div class="library-explanation-overlay fade-in" @onclick="() => showDetail = false">
+        <div class="library-explanation-card" @onclick:stopPropagation="true">
+            <div class="explanation-header">
+                <button class="btn-close" @onclick="() => showDetail = false">✕</button>
+            </div>
+            <h3 class="explanation-term">@selectedItem.Input</h3>
+            <div class="explanation-scroll-content">
+                <div class="explanation-body">
+                    <p>@selectedItem.Explanation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool showDetail;
+    private HistoryEntry? selectedItem;
+
+    private void GoHome() => Nav.NavigateTo("/");
+
+    private void ClearHistory()
+    {
+        HistorySvc.Clear();
+        showDetail = false;
+    }
+
+    private void ShowDetail(HistoryEntry item)
+    {
+        selectedItem = item;
+        showDetail = true;
+    }
+
+    private static string Truncate(string text, int max) =>
+        text.Length <= max ? text : text[..max] + "...";
+}

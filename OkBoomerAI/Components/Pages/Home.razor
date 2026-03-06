@@ -1,69 +1,149 @@
 @page "/"
 @inject IChatService ChatService
+@inject SlangDataService SlangData
+@inject HistoryService History
 
-<div class="hero-section">
-    <img src="boomer_hero.png" alt="OK Boomer AI" class="hero-image" />
-    <p class="tagline">Running Gen-Z Jokes on Legacy Humans</p>
+<div class="home-hero-bg"></div>
+
+<div class="home-title-block">
+    <h1 class="home-title">OK Boomer AI</h1>
+    <p class="home-subtitle">Running Gen-Z jokes on<br/>legacy humans</p>
 </div>
 
-<div class="input-card">
-    <textarea class="input-field" @bind="inputText" @bind:event="oninput"
-              placeholder="Enter meme or joke..." rows="2"></textarea>
-    
-    <div class="slider-container">
-        <span class="slider-label">Young</span>
-        <input type="range" class="slider" min="0" max="1" step="0.01" @bind="confusionLevel" />
-        <span class="slider-label">Full Boomer</span>
+<div class="home-input-card @(isBusy ? "card-loading" : "")">
+    <div class="home-input-header">
+        <span class="input-label-icon">@(isBusy ? "🧠" : "💬")</span>
+        <span class="home-input-label">@(isBusy ? "DECODING..." : "DECODE GEN-Z SPEAK")</span>
     </div>
+    
+    <div class="home-input-wrap">
+        <input type="text" class="home-input" @bind="inputText" @bind:event="oninput"
+               @onkeydown="HandleKeyDown" disabled="@isBusy"
+               placeholder="Paste a meme or slang..." />
+        <button class="home-send-btn @(isBusy ? "btn-spinning" : "")" @onclick="ExplainJoke" disabled="@isBusy">
+            ➜
+        </button>
+    </div>
+    
+    @if (isBusy)
+    {
+        <div class="decoding-progress">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <p class="decoding-text">@loadingMessage</p>
+        </div>
+    }
+    else
+    {
+        <div class="home-chips">
+            <button class="chip" @onclick="() => SetText(trendingMemes[0])">negative rizz</button>
+            <button class="chip" @onclick="() => SetText(trendingMemes[1])">main character energy</button>
+        </div>
+    }
 </div>
 
-<div class="btn-row">
-    <button class="btn btn-primary" @onclick="ExplainJoke" disabled="@isBusy">
-        @(isBusy ? "Thinking... 🤔" : "Explain the Joke")
-    </button>
-    <button class="btn btn-secondary" @onclick="ExplainSimpler" disabled="@(isBusy || !hasResult)">
-        Huh? 🤷
-    </button>
-</div>
+@if (dailySlang != null)
+{
+    <div class="daily-drop-card" @onclick="() => SetText(dailySlang.Term)">
+        <div class="daily-drop-badge">DAILY DROP</div>
+        <div class="daily-drop-content">
+            <h3 class="daily-term">@dailySlang.Term</h3>
+            <p class="daily-def">@dailySlang.Definition</p>
+        </div>
+        <div class="daily-arrow">➜</div>
+    </div>
+}
+
+<button class="home-trending-btn" @onclick="LoadTrending">
+    <span class="btn-icon">🔥</span> SEE WHAT'S TRENDING
+</button>
 
 @if (hasResult && result != null)
 {
-    <div class="result-card fade-in">
-        <span class="category-badge">@result.Category</span>
-        <div class="stars">
-            Boomer Confusion Level: @(new string('★', result.ConfusionStars))@(new string('☆', 5 - result.ConfusionStars))
+    <div class="home-result fade-in">
+        <div class="home-result-header">
+            <span class="home-result-badge">@result.Category</span>
+            <div class="confusion-meter">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <span class="meter-dot @(i < result.ConfusionStars ? "filled" : "")"></span>
+                }
+            </div>
         </div>
-        <p class="explanation-text">@result.Explanation</p>
-        <span class="humor-note">@result.HumorNote</span>
-        
-        <div class="btn-row" style="margin-top: 16px;">
-            <button class="btn btn-ghost" @onclick="Share">Share</button>
-            <button class="btn btn-accent" @onclick="Reset">OK Boomer</button>
+        <p class="home-result-text">@result.Explanation</p>
+        <div class="home-result-note">@result.HumorNote</div>
+        <div class="home-result-actions">
+            <button class="home-action-btn btn-explain" @onclick="ExplainSimpler">Explain Simpler</button>
+            <button class="home-action-btn btn-copy" @onclick="Share">Copy</button>
+            <button class="home-action-btn btn-new" @onclick="Reset">New</button>
         </div>
     </div>
 }
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
-    <div class="result-card" style="border-color: var(--hot-pink);">
-        <p class="explanation-text">💀 @errorMessage</p>
+    <div class="home-result fade-in" style="border-color: #E74C3C;">
+        <p class="home-result-text">💀 @errorMessage</p>
+        <button class="home-action-btn" @onclick="() => errorMessage = null">Dismiss</button>
     </div>
 }
 
 @code {
     private string inputText = "";
-    private double confusionLevel = 0.5;
+    private double confusionLevel = 0.7;
     private bool isBusy;
     private bool hasResult;
     private string? errorMessage;
     private JokeExplanation? result;
+    private SlangEntry? dailySlang;
+    private string loadingMessage = "Analyzing slang...";
+
+    private readonly string[] loadingMessages = [
+        "Analyzing slang...",
+        "Consulting Gen-Z oracles...",
+        "Translating to boomer...",
+        "Decoding internet culture...",
+        "Almost there, old timer..."
+    ];
+
+    private readonly string[] trendingMemes = [
+        "bro has negative rizz 💀",
+        "it's giving main character energy",
+        "no cap this slaps fr fr",
+        "tell me you're a boomer without telling me",
+        "the audacity is giving Karen",
+        "understood the assignment ngl",
+        "slay bestie periodt"
+    ];
 
     private const string Schema = """{"type":"object","properties":{"category":{"type":"string"},"confusion_stars":{"type":"integer"},"explanation":{"type":"string"},"humor_note":{"type":"string"}},"required":["category","confusion_stars","explanation","humor_note"]}""";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entries = await SlangData.GetEntriesAsync();
+        if (entries.Any())
+        {
+            var rng = new Random();
+            dailySlang = entries[rng.Next(entries.Count)];
+        }
+    }
+
+    private void SetText(string text)
+    {
+        inputText = text;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !isBusy && !string.IsNullOrWhiteSpace(inputText))
+            await ExplainJoke();
+    }
 
     private async Task ExplainJoke()
     {
         if (string.IsNullOrWhiteSpace(inputText)) return;
         isBusy = true; hasResult = false; errorMessage = null;
+        loadingMessage = loadingMessages[0];
+        _ = CycleLoadingMessages();
         try
         {
             var json = await ChatService.GetStructuredResponseAsync(
@@ -72,9 +152,24 @@
                 Schema);
             result = System.Text.Json.JsonSerializer.Deserialize<JokeExplanation>(json);
             hasResult = result != null;
+            if (result != null)
+                History.Add(inputText, result.Explanation, result.Category);
         }
         catch (Exception ex) { errorMessage = ex.Message; }
         finally { isBusy = false; }
+    }
+
+    private async Task CycleLoadingMessages()
+    {
+        var i = 0;
+        while (isBusy)
+        {
+            await Task.Delay(1500);
+            if (!isBusy) break;
+            i = (i + 1) % loadingMessages.Length;
+            loadingMessage = loadingMessages[i];
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task ExplainSimpler()
@@ -85,13 +180,22 @@
         {
             var json = await ChatService.GetStructuredResponseAsync(
                 Prompts.SlangDecoder,
-                $"Explain this MUCH simpler, I really don't get it: {inputText}",
+                $"Explain this MUCH simpler, like I'm a total boomer who just discovered the internet: {inputText}",
                 Schema);
             result = System.Text.Json.JsonSerializer.Deserialize<JokeExplanation>(json);
             hasResult = result != null;
+            if (result != null)
+                History.Add(inputText, result.Explanation, result.Category);
         }
         catch (Exception ex) { errorMessage = ex.Message; }
         finally { isBusy = false; }
+    }
+
+    private void LoadTrending()
+    {
+        var rng = new Random();
+        inputText = trendingMemes[rng.Next(trendingMemes.Length)];
+        _ = ExplainJoke();
     }
 
     private async Task Share()

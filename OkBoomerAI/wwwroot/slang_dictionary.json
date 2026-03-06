@@ -1,0 +1,302 @@
+[
+  {
+    "Term": "no cap",
+    "Definition": "No lie; being completely honest and truthful",
+    "Example": "That concert was the best I've ever been to, no cap.",
+    "Category": "emphasis"
+  },
+  {
+    "Term": "slay",
+    "Definition": "To do something exceptionally well; to excel or dominate",
+    "Example": "You absolutely slayed that presentation today!",
+    "Category": "praise"
+  },
+  {
+    "Term": "sus",
+    "Definition": "Suspicious or untrustworthy; something that seems off",
+    "Example": "He said he was busy but posted stories at the club — that's sus.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "bussin",
+    "Definition": "Extremely good, especially used for food but applies to anything amazing",
+    "Example": "This mac and cheese is absolutely bussin.",
+    "Category": "praise"
+  },
+  {
+    "Term": "fr fr",
+    "Definition": "For real for real; used to emphasize sincerity or agreement",
+    "Example": "I'm so tired of this class, fr fr.",
+    "Category": "emphasis"
+  },
+  {
+    "Term": "bet",
+    "Definition": "An affirmation meaning okay, sure, or sounds good",
+    "Example": "You wanna grab food later? Bet.",
+    "Category": "emphasis"
+  },
+  {
+    "Term": "mid",
+    "Definition": "Average, mediocre, or nothing special",
+    "Example": "Everyone hyped that movie up but honestly it was mid.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "salty",
+    "Definition": "Being bitter, upset, or resentful about something",
+    "Example": "She's been salty ever since she lost the game.",
+    "Category": "emotion"
+  },
+  {
+    "Term": "pressed",
+    "Definition": "Being overly upset, bothered, or stressed about something",
+    "Example": "Why are you so pressed about what they said? Just let it go.",
+    "Category": "emotion"
+  },
+  {
+    "Term": "stan",
+    "Definition": "An extremely devoted and enthusiastic fan of someone or something",
+    "Example": "I stan her music — I've been to every single tour.",
+    "Category": "fandom"
+  },
+  {
+    "Term": "periodt",
+    "Definition": "Period but with extra emphasis; end of discussion, no debate",
+    "Example": "She's the best player on the team, periodt.",
+    "Category": "emphasis"
+  },
+  {
+    "Term": "vibe check",
+    "Definition": "An assessment of someone's mood, energy, or the atmosphere of a situation",
+    "Example": "Walking into this party — vibe check: immaculate.",
+    "Category": "social"
+  },
+  {
+    "Term": "it's giving",
+    "Definition": "Used to describe the energy, mood, or impression something gives off",
+    "Example": "That outfit? It's giving main character energy.",
+    "Category": "description"
+  },
+  {
+    "Term": "rent free",
+    "Definition": "When something or someone occupies your thoughts constantly without effort",
+    "Example": "That embarrassing moment from 2019 lives in my head rent free.",
+    "Category": "obsession"
+  },
+  {
+    "Term": "understood the assignment",
+    "Definition": "Executed something perfectly; knew exactly what to do and nailed it",
+    "Example": "Her outfit at the gala? She understood the assignment.",
+    "Category": "praise"
+  },
+  {
+    "Term": "main character",
+    "Definition": "Someone who acts like or is treated as the protagonist of their own story",
+    "Example": "Walking through the airport with coffee and sunglasses — full main character moment.",
+    "Category": "self"
+  },
+  {
+    "Term": "ick",
+    "Definition": "A sudden feeling of disgust or turn-off toward someone you were attracted to",
+    "Example": "He clapped when the plane landed and I got the ick instantly.",
+    "Category": "dating"
+  },
+  {
+    "Term": "simp",
+    "Definition": "Someone who does way too much for a person they like, often without reciprocation",
+    "Example": "He drove three hours just to bring her coffee — total simp behavior.",
+    "Category": "dating"
+  },
+  {
+    "Term": "ghosting",
+    "Definition": "Suddenly cutting off all communication with someone without explanation",
+    "Example": "We were texting every day and then he just started ghosting me.",
+    "Category": "dating"
+  },
+  {
+    "Term": "rizz",
+    "Definition": "Charm, charisma, or the ability to attract others through personality",
+    "Example": "He walked up and got her number in two minutes — unspoken rizz.",
+    "Category": "dating"
+  },
+  {
+    "Term": "delulu",
+    "Definition": "Delusional; having unrealistic beliefs or expectations, sometimes used positively",
+    "Example": "She thinks she'll date that celebrity — delulu is the solulu.",
+    "Category": "description"
+  },
+  {
+    "Term": "ate",
+    "Definition": "Did something extremely well; performed or executed flawlessly",
+    "Example": "She ate that dance routine and left everyone speechless.",
+    "Category": "praise"
+  },
+  {
+    "Term": "left no crumbs",
+    "Definition": "Did something so perfectly there was nothing left to criticize",
+    "Example": "Her speech at graduation? She ate and left no crumbs.",
+    "Category": "praise"
+  },
+  {
+    "Term": "touch grass",
+    "Definition": "Go outside and experience real life; stop being so terminally online",
+    "Example": "You've been arguing on Twitter for six hours — please touch grass.",
+    "Category": "internet"
+  },
+  {
+    "Term": "chronically online",
+    "Definition": "Spending so much time on the internet that it warps your perception of reality",
+    "Example": "Only someone chronically online would know that reference.",
+    "Category": "internet"
+  },
+  {
+    "Term": "NPC",
+    "Definition": "Someone who seems to lack independent thought, like a non-player character in a game",
+    "Example": "He just stands there agreeing with everyone — total NPC energy.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "lowkey",
+    "Definition": "Slightly, secretly, or in a subtle understated way",
+    "Example": "I lowkey love that song even though everyone says it's bad.",
+    "Category": "modifier"
+  },
+  {
+    "Term": "highkey",
+    "Definition": "Openly, obviously, or without any attempt to hide it",
+    "Example": "I highkey need a vacation right now.",
+    "Category": "modifier"
+  },
+  {
+    "Term": "deadass",
+    "Definition": "Completely serious; not joking at all",
+    "Example": "I'm deadass not going to that party tonight.",
+    "Category": "emphasis"
+  },
+  {
+    "Term": "hits different",
+    "Definition": "Feels uniquely better or more impactful than usual",
+    "Example": "Music hits different when you're driving at night.",
+    "Category": "description"
+  },
+  {
+    "Term": "sending me",
+    "Definition": "Something is so funny it's making you lose it",
+    "Example": "That meme is absolutely sending me right now.",
+    "Category": "humor"
+  },
+  {
+    "Term": "skull emoji 💀",
+    "Definition": "Used to indicate something is so funny you're figuratively dead from laughing",
+    "Example": "She really said that with a straight face 💀",
+    "Category": "humor"
+  },
+  {
+    "Term": "ratio",
+    "Definition": "When a reply gets more likes than the original post, indicating public disagreement",
+    "Example": "His bad take got ratioed so hard the replies are brutal.",
+    "Category": "internet"
+  },
+  {
+    "Term": "L",
+    "Definition": "A loss or failure; something negative or embarrassing",
+    "Example": "Forgetting your lines during the presentation was a massive L.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "W",
+    "Definition": "A win or success; something positive and worth celebrating",
+    "Example": "Getting that promotion is a huge W, congrats!",
+    "Category": "praise"
+  },
+  {
+    "Term": "unalive",
+    "Definition": "A euphemism used online to avoid content moderation filters on sensitive topics",
+    "Example": "That horror movie scene where the villain tries to unalive everyone was wild.",
+    "Category": "internet"
+  },
+  {
+    "Term": "CEO of",
+    "Definition": "Being the ultimate example or embodiment of something",
+    "Example": "She's the CEO of arriving fashionably late to every event.",
+    "Category": "description"
+  },
+  {
+    "Term": "pick me",
+    "Definition": "Someone who seeks validation by putting others down or acting different to gain approval",
+    "Example": "She only said that to impress him — such pick me behavior.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "gaslight",
+    "Definition": "To manipulate someone into questioning their own reality or perceptions",
+    "Example": "Don't try to gaslight me — I know what I saw.",
+    "Category": "manipulation"
+  },
+  {
+    "Term": "gatekeep",
+    "Definition": "To control access to information, trends, or communities to keep them exclusive",
+    "Example": "Stop gatekeeping that restaurant — tell us where it is!",
+    "Category": "manipulation"
+  },
+  {
+    "Term": "girlboss",
+    "Definition": "A woman who is ambitious and assertive, sometimes used sarcastically",
+    "Example": "She quit her job to start her own company — total girlboss move.",
+    "Category": "empowerment"
+  },
+  {
+    "Term": "era",
+    "Definition": "A phase or period in someone's life defined by a particular theme or behavior",
+    "Example": "I'm entering my fitness era — gym every morning at 6 AM.",
+    "Category": "self"
+  },
+  {
+    "Term": "brainrot",
+    "Definition": "The effect of consuming too much low-quality internet content, degrading your humor and attention span",
+    "Example": "I spent all weekend watching TikTok and now I have terminal brainrot.",
+    "Category": "internet"
+  },
+  {
+    "Term": "aura",
+    "Definition": "A person's perceived social points or cool factor based on their actions",
+    "Example": "Tripping in front of everyone — minus 1000 aura.",
+    "Category": "social"
+  },
+  {
+    "Term": "beige flag",
+    "Definition": "A trait that isn't a red flag or green flag but is oddly notable or boring",
+    "Example": "His beige flag is that he narrates everything he's cooking.",
+    "Category": "dating"
+  },
+  {
+    "Term": "cheugy",
+    "Definition": "Outdated, uncool, or trying too hard to be trendy in an older millennial way",
+    "Example": "Live laugh love signs are so cheugy at this point.",
+    "Category": "criticism"
+  },
+  {
+    "Term": "Roman Empire",
+    "Definition": "Something you think about constantly and obsessively, referencing men's fixation on Rome",
+    "Example": "The Roman Empire for me is wondering if fish get thirsty.",
+    "Category": "obsession"
+  },
+  {
+    "Term": "catch these hands",
+    "Definition": "A threat to fight someone; an invitation to physical confrontation",
+    "Example": "Talk about my friends again and you're gonna catch these hands.",
+    "Category": "confrontation"
+  },
+  {
+    "Term": "living my best life",
+    "Definition": "Enjoying life to the fullest without caring about others' opinions",
+    "Example": "Quit my toxic job, booked a solo trip — living my best life.",
+    "Category": "empowerment"
+  },
+  {
+    "Term": "cringe",
+    "Definition": "Something so awkward or embarrassing it makes you physically uncomfortable",
+    "Example": "His public proposal after two weeks of dating was pure cringe.",
+    "Category": "criticism"
+  }
+]

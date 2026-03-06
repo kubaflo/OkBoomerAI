@@ -2,14 +2,14 @@
 @inject IChatService ChatService
 
 <h2 class="page-title">📊 Vibe Check</h2>
-<p class="page-subtitle">Paste any text and I'll read the vibes</p>
+<p class="page-subtitle">Paste any text and I'll read the vibes ✨</p>
 
-<div class="input-card">
+<div class="card">
     <textarea class="input-field" @bind="inputText" placeholder="Paste a text message, tweet, or comment..." rows="4"></textarea>
 </div>
 
-<button class="btn btn-primary" style="width: 100%; background: var(--hot-pink);" @onclick="Analyze" disabled="@isBusy">
-    @(isBusy ? "Reading vibes... ✨" : "🔮 Check the Vibe")
+<button class="btn btn-secondary" style="width: 100%;" @onclick="Analyze" disabled="@isBusy">
+    @(isBusy ? "✨ Reading vibes..." : "🔮 Check the Vibe")
 </button>
 
 @if (result != null)

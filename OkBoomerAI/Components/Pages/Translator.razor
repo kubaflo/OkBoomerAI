@@ -2,30 +2,31 @@
 @inject IChatService ChatService
 
 <h2 class="page-title">🔄 Boomer Translator</h2>
+<p class="page-subtitle">Bridging the generational gap</p>
 
-<div class="input-card">
+<div class="card">
     <div class="direction-toggle">
-        <button class="btn @(isBoomerToGenZ ? "btn-accent" : "btn-ghost")" @onclick="() => isBoomerToGenZ = true">
-            Boomer → Gen-Z
+        <button class="btn @(isBoomerToGenZ ? "btn-accent" : "btn-ghost-card")" @onclick="() => isBoomerToGenZ = true">
+            👴 → 🧒
         </button>
-        <button class="btn @(!isBoomerToGenZ ? "btn-accent" : "btn-ghost")" @onclick="() => isBoomerToGenZ = false">
-            Gen-Z → Boomer
+        <button class="btn @(!isBoomerToGenZ ? "btn-accent" : "btn-ghost-card")" @onclick="() => isBoomerToGenZ = false">
+            🧒 → 👴
         </button>
     </div>
     <textarea class="input-field" @bind="inputText" placeholder="Type something to translate..." rows="3"></textarea>
 </div>
 
 <button class="btn btn-primary" style="width: 100%;" @onclick="Translate" disabled="@isBusy">
-    @(isBusy ? "Translating... 🔮" : "🔮 Translate")
+    @(isBusy ? "🔮 Translating..." : "🔮 Translate")
 </button>
 
 @if (result != null)
 {
     <div class="result-card fade-in">
         <label class="field-label">Translation</label>
-        <p class="explanation-text" style="font-size: 1.2em; font-weight: bold;">@result.Translation</p>
+        <p class="explanation-text" style="font-size: 1.1em; font-weight: bold;">@result.Translation</p>
         <label class="field-label">Tone Shift</label>
-        <p class="explanation-text" style="color: var(--accent-purple);">@result.ToneShift</p>
+        <p class="explanation-text" style="color: var(--amber);">@result.ToneShift</p>
         <label class="field-label">Notes</label>
         <p class="explanation-text">@result.Notes</p>
     </div>

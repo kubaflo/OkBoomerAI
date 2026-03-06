@@ -44,10 +44,29 @@ public class AppleIntelligenceChatService : IChatService
     {
         var messages = new List<ChatMessage>
         {
-            new(ChatRole.System, systemPrompt + "\n\nRespond with ONLY valid JSON matching this schema:\n" + jsonSchema),
+            new(ChatRole.System, systemPrompt + "\n\nRespond with ONLY valid JSON matching this schema (no markdown, no backticks, no extra text):\n" + jsonSchema),
             new(ChatRole.User, userMessage)
         };
         var response = await _chatClient.GetResponseAsync(messages, cancellationToken: ct);
-        return response.Text ?? "{}";
+        return ExtractJson(response.Text ?? "{}");
+    }
+
+    private static string ExtractJson(string text)
+    {
+        text = text.Trim();
+        // Strip markdown code fences
+        if (text.StartsWith("```"))
+        {
+            var firstNewline = text.IndexOf('\n');
+            if (firstNewline > 0) text = text[(firstNewline + 1)..];
+            if (text.EndsWith("```")) text = text[..^3];
+            text = text.Trim();
+        }
+        // Find first { and last }
+        var start = text.IndexOf('{');
+        var end = text.LastIndexOf('}');
+        if (start >= 0 && end > start)
+            return text[start..(end + 1)];
+        return text;
     }
 }

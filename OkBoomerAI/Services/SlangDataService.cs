@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using OkBoomerAI.Models;
 
@@ -10,8 +11,23 @@ public class SlangDataService
     public async Task<List<SlangEntry>> GetEntriesAsync()
     {
         if (_entries != null) return _entries;
-        using var stream = await FileSystem.OpenAppPackageFileAsync("slang_dictionary.json");
-        _entries = await JsonSerializer.DeserializeAsync<List<SlangEntry>>(stream) ?? [];
+        try
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream("slang_dictionary.json");
+            if (stream != null)
+            {
+                _entries = await JsonSerializer.DeserializeAsync<List<SlangEntry>>(stream) ?? [];
+            }
+            else
+            {
+                _entries = [];
+            }
+        }
+        catch
+        {
+            _entries = [];
+        }
         return _entries;
     }
 }
