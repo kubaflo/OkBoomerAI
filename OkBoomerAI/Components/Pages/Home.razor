@@ -1,0 +1,104 @@
+@page "/"
+@inject IChatService ChatService
+
+<div class="hero-section">
+    <img src="boomer_hero.png" alt="OK Boomer AI" class="hero-image" />
+    <p class="tagline">Running Gen-Z Jokes on Legacy Humans</p>
+</div>
+
+<div class="input-card">
+    <textarea class="input-field" @bind="inputText" @bind:event="oninput"
+              placeholder="Enter meme or joke..." rows="2"></textarea>
+    
+    <div class="slider-container">
+        <span class="slider-label">Young</span>
+        <input type="range" class="slider" min="0" max="1" step="0.01" @bind="confusionLevel" />
+        <span class="slider-label">Full Boomer</span>
+    </div>
+</div>
+
+<div class="btn-row">
+    <button class="btn btn-primary" @onclick="ExplainJoke" disabled="@isBusy">
+        @(isBusy ? "Thinking... 🤔" : "Explain the Joke")
+    </button>
+    <button class="btn btn-secondary" @onclick="ExplainSimpler" disabled="@(isBusy || !hasResult)">
+        Huh? 🤷
+    </button>
+</div>
+
+@if (hasResult && result != null)
+{
+    <div class="result-card fade-in">
+        <span class="category-badge">@result.Category</span>
+        <div class="stars">
+            Boomer Confusion Level: @(new string('★', result.ConfusionStars))@(new string('☆', 5 - result.ConfusionStars))
+        </div>
+        <p class="explanation-text">@result.Explanation</p>
+        <span class="humor-note">@result.HumorNote</span>
+        
+        <div class="btn-row" style="margin-top: 16px;">
+            <button class="btn btn-ghost" @onclick="Share">Share</button>
+            <button class="btn btn-accent" @onclick="Reset">OK Boomer</button>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="result-card" style="border-color: var(--hot-pink);">
+        <p class="explanation-text">💀 @errorMessage</p>
+    </div>
+}
+
+@code {
+    private string inputText = "";
+    private double confusionLevel = 0.5;
+    private bool isBusy;
+    private bool hasResult;
+    private string? errorMessage;
+    private JokeExplanation? result;
+
+    private const string Schema = """{"type":"object","properties":{"category":{"type":"string"},"confusion_stars":{"type":"integer"},"explanation":{"type":"string"},"humor_note":{"type":"string"}},"required":["category","confusion_stars","explanation","humor_note"]}""";
+
+    private async Task ExplainJoke()
+    {
+        if (string.IsNullOrWhiteSpace(inputText)) return;
+        isBusy = true; hasResult = false; errorMessage = null;
+        try
+        {
+            var json = await ChatService.GetStructuredResponseAsync(
+                Prompts.SlangDecoder, 
+                $"Explain this (confusion level {confusionLevel:F1}): {inputText}",
+                Schema);
+            result = System.Text.Json.JsonSerializer.Deserialize<JokeExplanation>(json);
+            hasResult = result != null;
+        }
+        catch (Exception ex) { errorMessage = ex.Message; }
+        finally { isBusy = false; }
+    }
+
+    private async Task ExplainSimpler()
+    {
+        if (string.IsNullOrWhiteSpace(inputText)) return;
+        isBusy = true; errorMessage = null;
+        try
+        {
+            var json = await ChatService.GetStructuredResponseAsync(
+                Prompts.SlangDecoder,
+                $"Explain this MUCH simpler, I really don't get it: {inputText}",
+                Schema);
+            result = System.Text.Json.JsonSerializer.Deserialize<JokeExplanation>(json);
+            hasResult = result != null;
+        }
+        catch (Exception ex) { errorMessage = ex.Message; }
+        finally { isBusy = false; }
+    }
+
+    private async Task Share()
+    {
+        if (result == null) return;
+        await Clipboard.Default.SetTextAsync($"🧓 OK Boomer AI explained: \"{inputText}\"\n\n{result.Explanation}\n\n— {result.HumorNote}");
+    }
+
+    private void Reset() { inputText = ""; hasResult = false; result = null; errorMessage = null; }
+}

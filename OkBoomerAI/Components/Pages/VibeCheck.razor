@@ -1,0 +1,62 @@
+@page "/vibecheck"
+@inject IChatService ChatService
+
+<h2 class="page-title">📊 Vibe Check</h2>
+<p class="page-subtitle">Paste any text and I'll read the vibes</p>
+
+<div class="input-card">
+    <textarea class="input-field" @bind="inputText" placeholder="Paste a text message, tweet, or comment..." rows="4"></textarea>
+</div>
+
+<button class="btn btn-primary" style="width: 100%; background: var(--hot-pink);" @onclick="Analyze" disabled="@isBusy">
+    @(isBusy ? "Reading vibes... ✨" : "🔮 Check the Vibe")
+</button>
+
+@if (result != null)
+{
+    <div class="vibe-card fade-in" style="--vibe-color: @GetVibeColor(result.Vibe);">
+        <div class="vibe-emoji">@result.Emoji</div>
+        <div class="vibe-name">@result.Vibe.ToUpper()</div>
+        <div class="vibe-bar">
+            <div class="vibe-bar-fill" style="width: @(result.Confidence * 100)%;"></div>
+        </div>
+        <div class="vibe-confidence">@(result.Confidence.ToString("P0")) confidence</div>
+    </div>
+    <div class="result-card fade-in">
+        <label class="field-label">Analysis</label>
+        <p class="explanation-text">@result.Explanation</p>
+        <label class="field-label">Boomer Translation</label>
+        <p class="explanation-text" style="font-style: italic; color: var(--accent-purple);">@result.BoomerTranslation</p>
+    </div>
+    <button class="btn btn-ghost" style="width: 100%;" @onclick="Reset">🔄 New Vibe Check</button>
+}
+
+@code {
+    private string inputText = "";
+    private bool isBusy;
+    private VibeResult? result;
+    private const string Schema = """{"type":"object","properties":{"vibe":{"type":"string"},"confidence":{"type":"number"},"emoji":{"type":"string"},"explanation":{"type":"string"},"boomer_translation":{"type":"string"}},"required":["vibe","confidence","emoji","explanation","boomer_translation"]}""";
+
+    private async Task Analyze()
+    {
+        if (string.IsNullOrWhiteSpace(inputText)) return;
+        isBusy = true; result = null;
+        try
+        {
+            var json = await ChatService.GetStructuredResponseAsync(Prompts.VibeCheck, inputText, Schema);
+            result = System.Text.Json.JsonSerializer.Deserialize<VibeResult>(json);
+        }
+        catch { }
+        finally { isBusy = false; }
+    }
+
+    private void Reset() { inputText = ""; result = null; }
+
+    private string GetVibeColor(string vibe) => vibe switch
+    {
+        "sarcastic" => "#FF6B6B", "wholesome" => "#51CF66", "toxic" => "#FF0044",
+        "flirty" => "#FF69B4", "passive_aggressive" => "#FFA500", "chaotic" => "#9B59B6",
+        "cringe" => "#E67E22", "sus" => "#F1C40F", "slay" => "#00D2FF", "mid" => "#95A5A6",
+        _ => "#8892B0"
+    };
+}

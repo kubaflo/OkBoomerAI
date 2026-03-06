@@ -1,0 +1,108 @@
+@page "/dictionary"
+@inject SlangDataService SlangData
+@inject IChatService ChatService
+@inject IEmbeddingService EmbeddingService
+
+<h2 class="page-title">📚 Slang Dictionary</h2>
+<p class="page-subtitle">Search by meaning using AI embeddings ✨</p>
+
+<div class="input-card">
+    <input type="text" class="input-field" @bind="searchText" @bind:event="oninput"
+           @onkeyup="HandleSearch" placeholder="Search by meaning... (e.g., 'angry')" />
+</div>
+
+@if (isLoadingEmbeddings)
+{
+    <p class="page-subtitle">🧠 Loading semantic search...</p>
+}
+
+@if (showExplanation && selectedEntry != null)
+{
+    <div class="result-card fade-in" style="border-color: var(--neon-green);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: var(--neon-green); margin: 0;">@selectedEntry.Term</h3>
+            <button class="btn btn-ghost" @onclick="() => showExplanation = false" style="padding: 4px 12px;">✕</button>
+        </div>
+        <p class="explanation-text">@explanation</p>
+    </div>
+}
+
+<div class="dictionary-list">
+    @foreach (var entry in filteredEntries)
+    {
+        <div class="dictionary-item" @onclick="() => ExplainTerm(entry)">
+            <div class="dictionary-header">
+                <span class="dictionary-term">@entry.Term</span>
+                <span class="category-badge">@entry.Category</span>
+            </div>
+            <p class="dictionary-def">@entry.Definition</p>
+            <p class="dictionary-example">"@entry.Example"</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<SlangEntry> allEntries = [];
+    private List<SlangEntry> filteredEntries = [];
+    private Dictionary<string, float[]> embeddings = [];
+    private string searchText = "";
+    private bool isLoadingEmbeddings;
+    private bool showExplanation;
+    private SlangEntry? selectedEntry;
+    private string explanation = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        allEntries = await SlangData.GetEntriesAsync();
+        filteredEntries = allEntries;
+        _ = Task.Run(PrecomputeEmbeddings);
+    }
+
+    private async Task PrecomputeEmbeddings()
+    {
+        isLoadingEmbeddings = true;
+        await InvokeAsync(StateHasChanged);
+        try
+        {
+            foreach (var entry in allEntries)
+            {
+                var emb = await EmbeddingService.GetEmbeddingAsync($"{entry.Term}: {entry.Definition}");
+                embeddings[entry.Term] = emb;
+            }
+        }
+        catch { }
+        finally { isLoadingEmbeddings = false; await InvokeAsync(StateHasChanged); }
+    }
+
+    private async Task HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchText)) { filteredEntries = allEntries; return; }
+        if (embeddings.Count > 0)
+        {
+            try
+            {
+                var qEmb = await EmbeddingService.GetEmbeddingAsync(searchText);
+                filteredEntries = allEntries
+                    .Where(e => embeddings.ContainsKey(e.Term))
+                    .Select(e => new { Entry = e, Score = EmbeddingService.CosineSimilarity(qEmb, embeddings[e.Term]) })
+                    .OrderByDescending(x => x.Score).Take(15).Select(x => x.Entry).ToList();
+            }
+            catch { filteredEntries = allEntries.Where(e => e.Term.Contains(searchText, StringComparison.OrdinalIgnoreCase) || e.Definition.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList(); }
+        }
+        else
+        {
+            filteredEntries = allEntries.Where(e => e.Term.Contains(searchText, StringComparison.OrdinalIgnoreCase) || e.Definition.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+    }
+
+    private async Task ExplainTerm(SlangEntry entry)
+    {
+        selectedEntry = entry; showExplanation = true;
+        explanation = "Generating explanation... 🧠";
+        try
+        {
+            explanation = await ChatService.GetResponseAsync(Prompts.SlangExplainer, $"Explain: \"{entry.Term}\" ({entry.Definition})");
+        }
+        catch (Exception ex) { explanation = $"Couldn't explain: {ex.Message}"; }
+    }
+}

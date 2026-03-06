@@ -1,7 +1,4 @@
-using Microsoft.Extensions.AI;
-
 namespace OkBoomerAI.Services;
-
 public interface IEmbeddingService
 {
     Task<float[]> GetEmbeddingAsync(string text, CancellationToken ct = default);

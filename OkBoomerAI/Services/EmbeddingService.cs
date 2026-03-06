@@ -6,10 +6,7 @@ public class EmbeddingService : IEmbeddingService
 {
     private readonly IEmbeddingGenerator<string, Embedding<float>> _generator;
 
-    public EmbeddingService(IEmbeddingGenerator<string, Embedding<float>> generator)
-    {
-        _generator = generator;
-    }
+    public EmbeddingService(IEmbeddingGenerator<string, Embedding<float>> generator) => _generator = generator;
 
     public async Task<float[]> GetEmbeddingAsync(string text, CancellationToken ct = default)
     {
@@ -26,16 +23,9 @@ public class EmbeddingService : IEmbeddingService
     public float CosineSimilarity(float[] a, float[] b)
     {
         if (a.Length != b.Length) return 0f;
-
         float dot = 0, magA = 0, magB = 0;
-        for (int i = 0; i < a.Length; i++)
-        {
-            dot += a[i] * b[i];
-            magA += a[i] * a[i];
-            magB += b[i] * b[i];
-        }
-
-        var magnitude = MathF.Sqrt(magA) * MathF.Sqrt(magB);
-        return magnitude == 0 ? 0 : dot / magnitude;
+        for (int i = 0; i < a.Length; i++) { dot += a[i] * b[i]; magA += a[i] * a[i]; magB += b[i] * b[i]; }
+        var mag = MathF.Sqrt(magA) * MathF.Sqrt(magB);
+        return mag == 0 ? 0 : dot / mag;
     }
 }

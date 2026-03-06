@@ -1,0 +1,105 @@
+@page "/quiz"
+@inject IChatService ChatService
+
+<h2 class="page-title">🧠 Boomer Quiz</h2>
+
+<div class="quiz-score">
+    <div class="score-item">
+        <span class="score-value" style="color: var(--neon-green);">@score</span>
+        <span class="score-label">Score</span>
+    </div>
+    <div class="score-item">
+        <span class="score-value" style="color: var(--hot-pink);">@streak</span>
+        <span class="score-label">Streak 🔥</span>
+    </div>
+    <div class="score-item">
+        <span class="score-value" style="color: var(--accent-purple);">@totalQuestions</span>
+        <span class="score-label">Total</span>
+    </div>
+</div>
+
+@if (!hasQuestion || hasAnswered)
+{
+    <button class="btn btn-primary" style="width: 100%;" @onclick="GenerateQuestion" disabled="@isBusy">
+        @(isBusy ? "Generating... 🤔" : hasQuestion ? "Next Question →" : "🎮 Start Quiz")
+    </button>
+}
+
+@if (hasQuestion && question != null)
+{
+    <div class="quiz-card fade-in">
+        <p class="quiz-question">@question.Question</p>
+    </div>
+
+    <div class="quiz-options">
+        @for (int i = 0; i < question.Options.Count; i++)
+        {
+            var idx = i;
+            <button class="quiz-option @GetOptionClass(idx)" 
+                    @onclick="() => SubmitAnswer(idx)" disabled="@hasAnswered">
+                @question.Options[idx]
+            </button>
+        }
+    </div>
+
+    @if (hasAnswered)
+    {
+        <div class="result-card fade-in">
+            <p class="explanation-text">@feedback</p>
+        </div>
+    }
+}
+
+@if (totalQuestions > 0)
+{
+    <button class="btn btn-ghost" style="width: 100%;" @onclick="ResetScore">Reset Score</button>
+}
+
+@code {
+    private QuizQuestion? question;
+    private bool isBusy, hasQuestion, hasAnswered;
+    private int score, streak, totalQuestions, selectedIndex = -1;
+    private string feedback = "";
+    private const string Schema = """{"type":"object","properties":{"question":{"type":"string"},"options":{"type":"array","items":{"type":"string"}},"correct_index":{"type":"integer"},"explanation":{"type":"string"},"roast":{"type":"string"}},"required":["question","options","correct_index","explanation","roast"]}""";
+
+    private async Task GenerateQuestion()
+    {
+        isBusy = true; hasAnswered = false; hasQuestion = false; selectedIndex = -1; feedback = "";
+        try
+        {
+            var ctx = totalQuestions > 0 ? $"Question #{totalQuestions + 1}. Score: {score}/{totalQuestions}." : "First question.";
+            var json = await ChatService.GetStructuredResponseAsync(Prompts.QuizGenerator, ctx, Schema);
+            question = System.Text.Json.JsonSerializer.Deserialize<QuizQuestion>(json);
+            hasQuestion = question != null;
+        }
+        catch { }
+        finally { isBusy = false; }
+    }
+
+    private void SubmitAnswer(int index)
+    {
+        if (question == null || hasAnswered) return;
+        selectedIndex = index; hasAnswered = true; totalQuestions++;
+        if (index == question.CorrectIndex)
+        {
+            score++; streak++;
+            feedback = $"✅ Correct! {question.Explanation}";
+            if (streak > 2) feedback += $"\n🔥 {streak} streak! Maybe you're not a total boomer.";
+        }
+        else
+        {
+            streak = 0;
+            feedback = $"❌ Wrong! {question.Roast}\n\n📖 {question.Explanation}";
+        }
+    }
+
+    private string GetOptionClass(int idx)
+    {
+        if (!hasAnswered) return selectedIndex == idx ? "selected" : "";
+        if (idx == question?.CorrectIndex) return "correct";
+        if (idx == selectedIndex) return "wrong";
+        return "disabled";
+    }
+
+    private void ResetScore() { score = 0; streak = 0; totalQuestions = 0; hasQuestion = false; hasAnswered = false; }
+}

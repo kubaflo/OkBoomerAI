@@ -1,0 +1,37 @@
+@inherits LayoutComponentBase
+
+<div class="app-container">
+    <main class="page">
+        @Body
+    </main>
+    
+    <nav class="tab-bar">
+        <a href="/" class="tab-item @(IsActive("/") ? "active" : "")">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">Home</span>
+        </a>
+        <a href="/translator" class="tab-item @(IsActive("/translator") ? "active" : "")">
+            <span class="tab-icon">🔄</span>
+            <span class="tab-label">Translate</span>
+        </a>
+        <a href="/vibecheck" class="tab-item @(IsActive("/vibecheck") ? "active" : "")">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">Vibe</span>
+        </a>
+        <a href="/dictionary" class="tab-item @(IsActive("/dictionary") ? "active" : "")">
+            <span class="tab-icon">📚</span>
+            <span class="tab-label">Dictionary</span>
+        </a>
+        <a href="/quiz" class="tab-item @(IsActive("/quiz") ? "active" : "")">
+            <span class="tab-icon">🧠</span>
+            <span class="tab-label">Quiz</span>
+        </a>
+    </nav>
+</div>
+
+@code {
+    [Inject] NavigationManager Nav { get; set; } = default!;
+    
+    private bool IsActive(string path) => 
+        path == "/" ? Nav.Uri == Nav.BaseUri : Nav.Uri.Contains(path);
+}

@@ -1,0 +1,54 @@
+@page "/translator"
+@inject IChatService ChatService
+
+<h2 class="page-title">🔄 Boomer Translator</h2>
+
+<div class="input-card">
+    <div class="direction-toggle">
+        <button class="btn @(isBoomerToGenZ ? "btn-accent" : "btn-ghost")" @onclick="() => isBoomerToGenZ = true">
+            Boomer → Gen-Z
+        </button>
+        <button class="btn @(!isBoomerToGenZ ? "btn-accent" : "btn-ghost")" @onclick="() => isBoomerToGenZ = false">
+            Gen-Z → Boomer
+        </button>
+    </div>
+    <textarea class="input-field" @bind="inputText" placeholder="Type something to translate..." rows="3"></textarea>
+</div>
+
+<button class="btn btn-primary" style="width: 100%;" @onclick="Translate" disabled="@isBusy">
+    @(isBusy ? "Translating... 🔮" : "🔮 Translate")
+</button>
+
+@if (result != null)
+{
+    <div class="result-card fade-in">
+        <label class="field-label">Translation</label>
+        <p class="explanation-text" style="font-size: 1.2em; font-weight: bold;">@result.Translation</p>
+        <label class="field-label">Tone Shift</label>
+        <p class="explanation-text" style="color: var(--accent-purple);">@result.ToneShift</p>
+        <label class="field-label">Notes</label>
+        <p class="explanation-text">@result.Notes</p>
+    </div>
+}
+
+@code {
+    private string inputText = "";
+    private bool isBoomerToGenZ = true;
+    private bool isBusy;
+    private TranslationResult? result;
+    private const string Schema = """{"type":"object","properties":{"translation":{"type":"string"},"tone_shift":{"type":"string"},"notes":{"type":"string"}},"required":["translation","tone_shift","notes"]}""";
+
+    private async Task Translate()
+    {
+        if (string.IsNullOrWhiteSpace(inputText)) return;
+        isBusy = true; result = null;
+        try
+        {
+            var prompt = isBoomerToGenZ ? Prompts.BoomerToGenZ : Prompts.GenZToBoomer;
+            var json = await ChatService.GetStructuredResponseAsync(prompt, inputText, Schema);
+            result = System.Text.Json.JsonSerializer.Deserialize<TranslationResult>(json);
+        }
+        catch { }
+        finally { isBusy = false; }
+    }
+}
