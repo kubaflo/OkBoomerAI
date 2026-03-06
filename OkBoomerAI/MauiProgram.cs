@@ -26,17 +26,43 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		// AI Services
+		// AI Services — use Apple Intelligence on real devices, mock on simulator
+		bool useRealAI = false;
 #if IOS || MACCATALYST
-#pragma warning disable CA1416 // Validate platform compatibility
-		builder.Services.AddSingleton<IChatClient>(new AppleIntelligenceChatClient());
-		builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(new NLEmbeddingGenerator());
+#pragma warning disable CA1416
+		if (OperatingSystem.IsIOSVersionAtLeast(26) || OperatingSystem.IsMacCatalystVersionAtLeast(26))
+		{
+			try
+			{
+				builder.Services.AddSingleton<IChatClient>(new AppleIntelligenceChatClient());
+				builder.Services.AddSingleton<IChatService, AppleIntelligenceChatService>();
+				useRealAI = true;
+			}
+			catch
+			{
+				// Apple Intelligence unavailable (simulator or unsupported device)
+			}
+		}
+
+		// Embeddings work on older iOS via NaturalLanguage framework
+		try
+		{
+			builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(new NLEmbeddingGenerator());
+			builder.Services.AddSingleton<IEmbeddingService, EmbeddingService>();
+		}
+		catch
+		{
+			// NLEmbedding unavailable — dictionary will use text search fallback
+		}
 #pragma warning restore CA1416
 #endif
 
-		// App Services
-		builder.Services.AddSingleton<IChatService, AppleIntelligenceChatService>();
-		builder.Services.AddSingleton<IEmbeddingService, EmbeddingService>();
+		if (!useRealAI)
+		{
+			System.Diagnostics.Debug.WriteLine("⚠️ Apple Intelligence unavailable — using MockChatService");
+			builder.Services.AddSingleton<IChatService, MockChatService>();
+		}
+
 		builder.Services.AddSingleton<SlangDataService>();
 
 		// ViewModels
